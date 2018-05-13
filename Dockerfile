@@ -2,20 +2,11 @@ FROM java:8-jdk
 
 ENV PKG_VER=2018.1.3-no-jdk
 
-RUN export http_proxy=http://agproxy.agint:8081 && \
-    apt-get update && \
+RUN apt-get update && \
 	apt-get install -y sudo curl sed vim && \
 	rm -rf /var/lib/apt/lists/*
 
-RUN export http_proxy=http://agproxy.agint:8081 && \
-    curl -Lo ss.crt http://ss.symcb.com/ss.crt && \
-    echo yes | keytool -keystore ${JAVA_HOME}/jre/lib/security/cacerts -storepass changeit -importcert -alias symcb -file ss.crt -noprompt && \
-    cp ss.crt /usr/local/share/ca-certificates/ && \
-    update-ca-certificates && \
-    rm ss.crt
-
-RUN export https_proxy=http://agproxy.agint:8081 && \
-    mkdir -p /usr/share/intellij && \
+RUN mkdir -p /usr/share/intellij && \
     curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/idea.tar.gz -L https://download.jetbrains.com/idea/ideaIU-${PKG_VER}.tar.gz && \
     tar -xf /tmp/idea.tar.gz --strip-components=1 -C /usr/share/intellij && \
     rm /tmp/idea.tar.gz
